@@ -1,5 +1,5 @@
 # Docker image for serving the Iris FastAPI app
-FROM python:3.11-slim
+FROM python:3.10-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -10,11 +10,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR ${APP_HOME}
 
-# Install system dependencies
-RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
-    apt-get update \
-    && apt-get install -y --no-install-recommends build-essential \
-    && rm -rf /var/lib/apt/lists/*
+# No system packages needed because dependencies ship prebuilt wheels
 
 # Copy dependency definitions first to leverage Docker layer caching
 COPY requirements.txt ./requirements.txt
