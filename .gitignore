@@ -1,0 +1,9 @@
+.dvc/
+.mlruns/
+__pycache__/
+*.pyc
+.terraform/
+terraform.tfstate
+terraform.tfstate.*
+.venv
+.dvcstore

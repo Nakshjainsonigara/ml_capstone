@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/nakshjain/Desktop/ml_capstone/mlruns/914050492167588523/7208212021124360a40b34f9450bef8c/artifacts
+end_time: 1758788410143
+entry_point_name: ''
+experiment_id: '914050492167588523'
+lifecycle_stage: active
+run_id: 7208212021124360a40b34f9450bef8c
+run_name: clean-cow-339
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1758788408780
+status: 3
+tags: []
+user_id: nakshjain

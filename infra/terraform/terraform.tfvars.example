@@ -1,0 +1,8 @@
+image_name      = "your-dockerhub-username/iris-api:latest"
+container_name  = "iris-api"
+host_port       = 8000
+mlflow_tracking_uri = ""
+mlflow_experiment   = "iris_classification"
+model_uri           = "runs:/abc123/model"
+labels_uri          = "runs:/abc123/model/label_encoder_classes.json"
+run_id              = "abc123"

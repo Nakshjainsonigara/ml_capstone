@@ -1,0 +1,10 @@
+artifact_location: file:///Users/nakshjain/Desktop/ml_capstone/mlruns/914050492167588523/models/m-3bf42b8a505a4aa6a515d9517af31ca8/artifacts
+creation_timestamp: 1758788408798
+experiment_id: '914050492167588523'
+last_updated_timestamp: 1758788410136
+model_id: m-3bf42b8a505a4aa6a515d9517af31ca8
+model_type: null
+name: model
+source_run_id: 7208212021124360a40b34f9450bef8c
+status: 2
+status_message: null
