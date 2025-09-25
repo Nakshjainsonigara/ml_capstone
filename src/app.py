@@ -30,12 +30,18 @@ def _load_model_bundle() -> Dict[str, Any]:
 
     if explicit_model_uri:
         model = mlflow.sklearn.load_model(explicit_model_uri)
-        label_mapping = mlflow.artifacts.load_dict(explicit_labels_uri or f"{explicit_model_uri}/label_encoder_classes.json")
+        label_mapping = mlflow.artifacts.load_dict(
+            explicit_labels_uri
+            or f"{explicit_model_uri}/label_encoder_classes.json"
+        )
         classes = label_mapping["classes"]
         run_id = os.getenv("RUN_ID", "explicit-model")
         return {"model": model, "classes": classes, "run_id": run_id}
 
-    experiment_name = os.getenv("MLFLOW_EXPERIMENT_NAME", "iris_classification")
+    experiment_name = os.getenv(
+        "MLFLOW_EXPERIMENT_NAME",
+        "iris_classification",
+    )
     tracking_uri = os.getenv("MLFLOW_TRACKING_URI")
     if tracking_uri:
         mlflow.set_tracking_uri(tracking_uri)
@@ -44,7 +50,8 @@ def _load_model_bundle() -> Dict[str, Any]:
     experiment = client.get_experiment_by_name(experiment_name)
     if experiment is None:
         raise RuntimeError(
-            f"Experiment '{experiment_name}' not found. Train the model before starting the API."
+            f"Experiment '{experiment_name}' not found. "
+            "Train the model before starting the API."
         )
 
     runs = client.search_runs(
@@ -54,7 +61,8 @@ def _load_model_bundle() -> Dict[str, Any]:
     )
     if not runs:
         raise RuntimeError(
-            f"No runs found for experiment '{experiment_name}'. Train the model before starting the API."
+            f"No runs found for experiment '{experiment_name}'. "
+            "Train the model before starting the API."
         )
 
     run = runs[0]
@@ -92,10 +100,15 @@ def predict(features: IrisFeatures) -> Dict[str, Any]:
 
     predicted_index = int(preds[0])
     if not 0 <= predicted_index < len(classes):
-        raise HTTPException(status_code=500, detail="Prediction index out of range")
+        raise HTTPException(
+            status_code=500,
+            detail="Prediction index out of range",
+        )
 
     predicted_label = classes[predicted_index]
-    probability = float(max(probs[0])) if hasattr(model, "predict_proba") else None
+    probability = None
+    if hasattr(model, "predict_proba"):
+        probability = float(max(probs[0]))
 
     response: Dict[str, Any] = {
         "prediction": predicted_label,
@@ -103,7 +116,12 @@ def predict(features: IrisFeatures) -> Dict[str, Any]:
         "probability": probability,
         "run_id": bundle["run_id"],
     }
-    response.update({f"proba_{classes[i]}": float(prob) for i, prob in enumerate(probs[0])})
+    response.update(
+        {
+            f"proba_{classes[i]}": float(prob)
+            for i, prob in enumerate(probs[0])
+        }
+    )
     return response
 
 

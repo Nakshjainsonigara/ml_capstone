@@ -9,23 +9,55 @@ import mlflow
 import mlflow.sklearn
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, classification_report, mean_squared_error
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    mean_squared_error,
+)
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Train Logistic Regression on Iris dataset")
-    parser.add_argument("--test-size", type=float, default=0.2, help="Proportion for test split")
-    parser.add_argument("--random-state", type=int, default=42, help="Random seed for reproducibility")
-    parser.add_argument("--max-iter", type=int, default=500, help="Max iterations for optimizer")
-    parser.add_argument("--C", type=float, default=1.0, help="Inverse regularization strength")
+    parser = argparse.ArgumentParser(
+        description="Train Logistic Regression on Iris dataset"
+    )
+    parser.add_argument(
+        "--test-size",
+        type=float,
+        default=0.2,
+        help="Proportion for test split",
+    )
+    parser.add_argument(
+        "--random-state",
+        type=int,
+        default=42,
+        help="Random seed for reproducibility",
+    )
+    parser.add_argument(
+        "--max-iter",
+        type=int,
+        default=500,
+        help="Max iterations for optimizer",
+    )
+    parser.add_argument(
+        "--C",
+        type=float,
+        default=1.0,
+        help="Inverse regularization strength",
+    )
     parser.add_argument(
         "--solver",
         type=str,
         default="lbfgs",
-        choices=["lbfgs", "saga", "liblinear", "newton-cg", "sag"],
+        choices=[
+            "lbfgs",
+            "saga",
+            "liblinear",
+            "newton-cg",
+            "sag",
+        ],
         help="Optimization algorithm",
     )
     parser.add_argument(
@@ -44,7 +76,12 @@ def load_data(data_path: pathlib.Path) -> tuple[pd.DataFrame, pd.Series]:
     return features, target
 
 
-def build_pipeline(C: float, max_iter: int, solver: str, random_state: int) -> Pipeline:
+def build_pipeline(
+    C: float,
+    max_iter: int,
+    solver: str,
+    random_state: int,
+) -> Pipeline:
     return Pipeline(
         steps=[
             ("scaler", StandardScaler()),
@@ -65,7 +102,9 @@ def build_pipeline(C: float, max_iter: int, solver: str, random_state: int) -> P
 def main() -> None:
     args = parse_args()
 
-    project_root = pathlib.Path(__file__).resolve().parent.parent
+    project_root = (
+        pathlib.Path(__file__).resolve().parent.parent
+    )
     data_file = project_root / "data" / "iris.csv"
 
     mlflow.set_tracking_uri(f"file://{project_root / 'mlruns'}")
@@ -107,7 +146,12 @@ def main() -> None:
         stratify=y_encoded,
     )
 
-    pipeline = build_pipeline(args.C, args.max_iter, args.solver, args.random_state)
+    pipeline = build_pipeline(
+        args.C,
+        args.max_iter,
+        args.solver,
+        args.random_state,
+    )
 
     with mlflow.start_run() as run:
         mlflow.log_params(
@@ -130,7 +174,10 @@ def main() -> None:
         mlflow.log_metrics({"accuracy": acc, "mse": mse})
 
         mlflow.sklearn.log_model(pipeline, artifact_path="model")
-        mlflow.log_dict({"classes": label_encoder.classes_.tolist()}, "model/label_encoder_classes.json")
+        mlflow.log_dict(
+            {"classes": label_encoder.classes_.tolist()},
+            "model/label_encoder_classes.json",
+        )
 
         report = classification_report(
             y_test,
@@ -139,10 +186,17 @@ def main() -> None:
             digits=4,
         )
 
-        with tempfile.NamedTemporaryFile("w", suffix="_classification_report.txt", delete=False) as tmp:
+        with tempfile.NamedTemporaryFile(
+            "w",
+            suffix="_classification_report.txt",
+            delete=False,
+        ) as tmp:
             tmp.write(report)
             report_path = pathlib.Path(tmp.name)
-        mlflow.log_artifact(report_path, artifact_path="evaluation")
+        mlflow.log_artifact(
+            report_path,
+            artifact_path="evaluation",
+        )
         report_path.unlink(missing_ok=True)
 
         print("Run ID:", run.info.run_id)
